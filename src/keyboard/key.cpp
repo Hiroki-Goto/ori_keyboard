@@ -1,8 +1,10 @@
 #include <Keyboard.h>
+#include <string.h>
 
 #include "Arduino.h"
 #include "key.h"
 #include "keycode.h"
+#include "keymap.h"
 
 
 Key::Key(int a){
@@ -22,6 +24,8 @@ Key::Key(int a){
         }
         digitalWrite(row_pin[i],LOW);
     }
+
+    change_layer = false;
 }
 
 void Key::scanMatrix(keyboradState keyboard_state){
@@ -32,13 +36,14 @@ void Key::scanMatrix(keyboradState keyboard_state){
             if(current_key_state[i][j] != before_key_state[i][j]){
                 if(current_key_state[i][j] == HIGH){
                     if(current_keymap[i][j] >= 0xF0){
-                        Keyboard.press(KC_Z);
+                        to_layer = current_keymap[i][j];
+                        change_layer = true;
                     }else{
                         Keyboard.press(current_keymap[i][j]);
                     }
                 }else{
                     if(current_keymap[i][j] >= 0xF0){
-                      Keyboard.release(KC_Z);
+                      //Keyboard.release(KC_Z);
                     }else{
                         Keyboard.release(current_keymap[i][j]);
                     }
@@ -48,15 +53,28 @@ void Key::scanMatrix(keyboradState keyboard_state){
         }
         digitalWrite(row_pin[i],LOW);
     }
+
+    if(change_layer){
+        changeLayer(to_layer);
+        change_layer = false;
+    }
 }
 
-void Key::changeLayer(uint8_t current_layer[ROW_NUM][COL_NUM], uint8_t to_layer){
+void Key::changeLayer(uint8_t layer){
+
+ 
+    switch (layer) {
+        case _DEFAULT:
+            memcpy(current_keymap, default_keymap, sizeof(rower_keymap));
+        break;
+
+        case _ROWER:
+            memcpy(current_keymap, rower_keymap, sizeof(rower_keymap));
+        break;
+
+        default:
+        break;
+    }
+
 }
 
-const uint8_t Key::default_keymap[ROW_NUM][COL_NUM] = {
-    {KC_A, _DEFAULT}
-};
-
-const uint8_t Key::rower_keymap[ROW_NUM][COL_NUM] = {
-    {KC_C, KC_B}
-};

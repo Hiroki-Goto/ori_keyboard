@@ -14,7 +14,7 @@ const int row_pin[ROW_NUM] = {9};
 const int col_pin[COL_NUM] = {10, 16};
 
 typedef struct keyboradState{
-    int current_layer;
+    uint8_t current_layer;
     bool num_lock;
     bool caps_lock;
     bool scr_lock;
