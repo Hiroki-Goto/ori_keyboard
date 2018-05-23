@@ -1,5 +1,6 @@
 #ifndef PARAM_H_
 #define PARAM_H_
+#include "keycode.h"
 
 enum layer_state{
     _DEFAULT=0xF0,
@@ -20,6 +21,13 @@ typedef struct keyboradState{
     bool scr_lock;
 };
 
-//OLED周り
-#define FONT_SIZE 10
+const uint8_t default_keymap[ROW_NUM][COL_NUM] = {
+    {KC_A, _ROWER}
+};
+
+const uint8_t rower_keymap[ROW_NUM][COL_NUM] = {
+    {KC_B, _DEFAULT}
+};
+
+
 #endif

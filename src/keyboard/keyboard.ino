@@ -6,8 +6,10 @@
 #include "key.h"
 #include "param.h"
 //#include "keycode.h"
+#include "OLED.h"
 
 Key key(0);
+OLED oled(0);
 keyboradState keyboard_state_t;
 
 void setup() {
@@ -21,5 +23,6 @@ void setup() {
 }
 
 void loop() {
-    key.scanMatrix(keyboard_state_t);
+    key.scanMatrix(&keyboard_state_t);
+    oled.display(&keyboard_state_t);
 }

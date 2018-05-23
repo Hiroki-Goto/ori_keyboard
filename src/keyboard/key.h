@@ -8,7 +8,7 @@ public:
     bool current_key_state[ROW_NUM][COL_NUM];
     bool before_key_state[ROW_NUM][COL_NUM];
 
-    void scanMatrix(keyboradState keyboard_state);
+    void scanMatrix(keyboradState *keyboard_state);
 
     void changeLayer(uint8_t layer);
 
