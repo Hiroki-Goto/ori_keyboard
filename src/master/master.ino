@@ -3,12 +3,12 @@
 #include <Mouse.h>
 
 
-#include "key.h"
+#include "key_master.h"
 #include "param.h"
 //#include "keycode.h"
 #include "OLED.h"
 
-Key key(0);
+KeyMaster keyMaster(0);
 OLED oled(0);
 keyboradState keyboard_state_t;
 
@@ -19,10 +19,11 @@ void setup() {
     keyboard_state_t.scr_lock = false;
 
     Serial.begin(9600);
+    Serial1.begin(9600);
     Keyboard.begin();
 }
 
 void loop() {
-    key.scanMatrix(&keyboard_state_t);
+    keyMaster.scanMatrix(&keyboard_state_t);
     oled.display(&keyboard_state_t);
 }
