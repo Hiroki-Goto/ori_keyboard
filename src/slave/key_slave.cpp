@@ -1,6 +1,14 @@
+#include <Wire.h>
 #include <Keyboard.h>
 
 #include "key_slave.h"
+
+void requestEvent();
+struct pressKeyState{
+    int is_press;
+    int row;
+    int col;
+}press_key_state;
 
 KeySlave::KeySlave(int no_use_num){
     for(int i=0; i<SLAVE_ROW_NUM; i++){
@@ -17,6 +25,7 @@ KeySlave::KeySlave(int no_use_num){
         }
         digitalWrite(slave_row_pin[i], HIGH);
     }
+
 }
 
 void KeySlave::scanMatrix(){
@@ -27,17 +36,24 @@ void KeySlave::scanMatrix(){
             if(current_key_state[i][j] != before_key_state[i][j]){
                 if(current_key_state[i][j] == LOW){
                     //Keyboard.press(0x61);
-                    sendSerial(PRESS, i, j);
+                    //sendSerial(PRESS, i, j);
+                    press_key_state.is_press = PRESS;
+                    press_key_state.row = i;
+                    press_key_state.col = j;
                 }else{
                     //Keyboard.release(0x61);
-                    sendSerial(RELEASE, i, j);
+                    //sendSerial(RELEASE, i, j);
+                    press_key_state.is_press = RELEASE;
+                    press_key_state.row = i;
+                    press_key_state.col = j;
                 }
                 before_key_state[i][j] = current_key_state[i][j];
+                delay(1);
             }
         }
         digitalWrite(slave_row_pin[i],HIGH);
     }
-    delay(1);
+     Wire.onRequest(requestEvent);
 }
 
 void KeySlave::sendSerial(int is_press, int row, int col){
@@ -45,4 +61,11 @@ void KeySlave::sendSerial(int is_press, int row, int col){
     int send_key_matrix = row * SLAVE_COL_NUM + col;
     send_data = 0b0 << 7 | is_press << 6 | send_key_matrix;
     Serial1.write(send_data);
+}
+
+void requestEvent(){
+    uint8_t send_data;
+    int send_key_matrix =  press_key_state.row* SLAVE_COL_NUM + press_key_state.col;
+    send_data = 0b0 << 7 | press_key_state.is_press << 6 | send_key_matrix;
+    Wire.write(send_data);
 }

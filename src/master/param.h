@@ -8,6 +8,9 @@ enum layer_state{
     _ROWER
 };
 
+#define SLAVE_ID 8
+#define MSG_BYTE 1
+
 //キーボード周りmaster_col_pin
 #define MASTER_ROW_NUM 1
 #define MASTER_COL_NUM 2
@@ -24,12 +27,12 @@ typedef struct keyboradState{
     bool scr_lock;
 };
 
-const uint8_t default_keymap[MASTER_ROW_NUM][MASTER_COL_NUM] = {
-    {KC_A, _ROWER}
+const uint8_t default_keymap[MASTER_ROW_NUM][MASTER_COL_NUM+SLAVE_COL_NUM] = {
+    {KC_A, _ROWER, KC_A, _ROWER}
 };
 
-const uint8_t rower_keymap[MASTER_ROW_NUM][MASTER_COL_NUM] = {
-    {KC_B, _DEFAULT}
+const uint8_t rower_keymap[MASTER_ROW_NUM][MASTER_COL_NUM+SLAVE_COL_NUM] = {
+    {KC_B, _DEFAULT, KC_B, _DEFAULT}
 };
 
 

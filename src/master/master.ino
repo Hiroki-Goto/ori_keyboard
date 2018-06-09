@@ -1,3 +1,4 @@
+#include <Wire.h>
 #include <Keyboard.h>
 
 #include <Mouse.h>
@@ -21,6 +22,7 @@ void setup() {
     Serial.begin(9600);
     Serial1.begin(9600);
     Keyboard.begin();
+    Wire.begin();
 }
 
 void loop() {

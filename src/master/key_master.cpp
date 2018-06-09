@@ -1,3 +1,4 @@
+#include <Wire.h>
 #include <Keyboard.h>
 #include <string.h>
 
@@ -19,9 +20,15 @@ KeyMaster::KeyMaster(int a){
             current_key_state[i][j] = HIGH;
             before_key_state[i][j] = HIGH;
 
-            current_keymap[i][j] = default_keymap[i][j];
+            //current_keymap[i][j] = default_keymap[i][j];
         }
         digitalWrite(master_row_pin[i], HIGH);
+    }
+
+    for(int i=0; i<MASTER_ROW_NUM; i++){
+        for(int j=0; j<(MASTER_COL_NUM+SLAVE_COL_NUM); j++){
+            current_keymap[i][j] = default_keymap[i][j];
+        }
     }
 
     change_layer = false;
@@ -58,15 +65,22 @@ void KeyMaster::scanMatrix(keyboradState *keyboard_state){
         changeLayer(to_layer);
         change_layer = false;
     }
-
+    /*
     if(Serial1.available()){
         readSerial(keyboard_state);
     }
+    */
+
+    Wire.requestFrom(SLAVE_ID, MSG_BYTE);// request 1 bytes from Slave ID #8
+
+    if(Wire.available()){
+        readI2c(keyboard_state);
+    }
+    
+
 }
 
 void KeyMaster::changeLayer(uint8_t layer){
-
-
     switch (layer) {
         case _DEFAULT:
             memcpy(current_keymap, default_keymap, sizeof(rower_keymap));
@@ -98,7 +112,9 @@ void KeyMaster::readSerial(keyboradState *keyboard_state){
     }
     if(is_press){
         if(current_keymap[row][col] >= 0xF0){
-            to_layer = current_keymap[row][col];
+            to_layer = current_keymap[row]
+
+            [col];
             keyboard_state->current_layer = to_layer;
             changeLayer(to_layer);
         }else{
@@ -108,6 +124,36 @@ void KeyMaster::readSerial(keyboradState *keyboard_state){
         if(current_keymap[row][col] >= 0xF0){
         }else{
             Keyboard.release(current_keymap[row][col]);
+        }
+    }
+}
+
+void KeyMaster::readI2c(keyboradState *keyboard_state){
+    uint8_t read_data;
+    read_data = Wire.read();
+
+    int is_press;
+    int slave_matrix,row,col;
+    if(read_data & 0b10000000 ){
+
+    }else{
+        is_press = read_data >> 6;
+        slave_matrix = read_data & 0b00111111;
+        row = slave_matrix / SLAVE_COL_NUM;
+        col = slave_matrix % SLAVE_COL_NUM;
+    }
+    if(is_press){
+        if(current_keymap[row][col] >= 0xF0){
+            to_layer = current_keymap[row][MASTER_COL_NUM+col];
+            keyboard_state->current_layer = to_layer;
+            changeLayer(to_layer);
+        }else{
+            Keyboard.press(current_keymap[row][MASTER_COL_NUM+col]);
+        }
+    }else{
+        if(current_keymap[row][col] >= 0xF0){
+        }else{
+            Keyboard.release(current_keymap[row][MASTER_COL_NUM+col]);
         }
     }
 }
