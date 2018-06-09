@@ -6,6 +6,7 @@
 #include "key_master.h"
 
 KeyMaster::KeyMaster(int a){
+    //ピン設定
     for(int i=0; i<MASTER_ROW_NUM; i++){
         pinMode(master_row_pin[i],OUTPUT);
     }
@@ -13,6 +14,7 @@ KeyMaster::KeyMaster(int a){
         pinMode(master_col_pin[i],INPUT_PULLUP);
     }
 
+    //状態の初期化
     for(int i=0; i<MASTER_ROW_NUM; i++){
         for(int j=0; j<MASTER_COL_NUM; j++){
             current_key_state[i][j] = HIGH;
@@ -20,7 +22,14 @@ KeyMaster::KeyMaster(int a){
         }
         digitalWrite(master_row_pin[i], HIGH);
     }
+    for(int i=0; i<MASTER_ROW_NUM; i++){
+        for(int j=0; j<(SLAVE_COL_NUM); j++){
+            current_key_state_slave[i][j] = HIGH;
+            before_key_state_slave[i][j] = HIGH;
+        }
+    }
 
+    //キーマップの初期化
     for(int i=0; i<MASTER_ROW_NUM; i++){
         for(int j=0; j<(MASTER_COL_NUM+SLAVE_COL_NUM); j++){
             current_key_state_slave[i][j] = HIGH;

@@ -28,11 +28,11 @@ typedef struct keyboradState{
 };
 
 const uint8_t default_keymap[MASTER_ROW_NUM][MASTER_COL_NUM+SLAVE_COL_NUM] = {
-    {KC_A, _ROWER, KC_C, _ROWER}
+    {KC_A, KC_B, KC_C, _ROWER}
 };
 
 const uint8_t rower_keymap[MASTER_ROW_NUM][MASTER_COL_NUM+SLAVE_COL_NUM] = {
-    {KC_E, _DEFAULT, KC_G, _DEFAULT}
+    {KC_E, KC_F, KC_G, _DEFAULT}
 };
 
 
