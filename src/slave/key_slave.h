@@ -7,11 +7,14 @@
 #define PRESS 1
 #define RELEASE 0
 
+void requestEvent();
+
 class KeySlave{
 public:
     KeySlave(int no_use_num);
 
     void scanMatrix();
+    //void requestEvent();
 
 private:
     bool current_key_state[SLAVE_ROW_NUM][SLAVE_COL_NUM];
