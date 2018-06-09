@@ -4,8 +4,6 @@
 
 #include "Arduino.h"
 #include "key_master.h"
-//#include "keymap.h"
-
 
 KeyMaster::KeyMaster(int a){
     for(int i=0; i<MASTER_ROW_NUM; i++){
@@ -19,14 +17,14 @@ KeyMaster::KeyMaster(int a){
         for(int j=0; j<MASTER_COL_NUM; j++){
             current_key_state[i][j] = HIGH;
             before_key_state[i][j] = HIGH;
-
-            //current_keymap[i][j] = default_keymap[i][j];
         }
         digitalWrite(master_row_pin[i], HIGH);
     }
 
     for(int i=0; i<MASTER_ROW_NUM; i++){
         for(int j=0; j<(MASTER_COL_NUM+SLAVE_COL_NUM); j++){
+            current_key_state_slave[i][j] = HIGH;
+            before_key_state_slave[i][j] = HIGH;
             current_keymap[i][j] = default_keymap[i][j];
         }
     }
@@ -61,7 +59,6 @@ void KeyMaster::scanMatrix(keyboradState *keyboard_state){
     }
 
     if(change_layer){
-        //keyboard_state.current_layer = to_layer;
         changeLayer(to_layer);
         change_layer = false;
     }
@@ -72,11 +69,10 @@ void KeyMaster::scanMatrix(keyboradState *keyboard_state){
     */
 
     Wire.requestFrom(SLAVE_ID, MSG_BYTE);// request 1 bytes from Slave ID #8
-
     if(Wire.available()){
         readI2c(keyboard_state);
     }
-    
+
 
 }
 
@@ -134,6 +130,7 @@ void KeyMaster::readI2c(keyboradState *keyboard_state){
 
     int is_press;
     int slave_matrix,row,col;
+
     if(read_data & 0b10000000 ){
 
     }else{
@@ -142,18 +139,37 @@ void KeyMaster::readI2c(keyboradState *keyboard_state){
         row = slave_matrix / SLAVE_COL_NUM;
         col = slave_matrix % SLAVE_COL_NUM;
     }
-    if(is_press){
-        if(current_keymap[row][col] >= 0xF0){
-            to_layer = current_keymap[row][MASTER_COL_NUM+col];
-            keyboard_state->current_layer = to_layer;
-            changeLayer(to_layer);
-        }else{
-            Keyboard.press(current_keymap[row][MASTER_COL_NUM+col]);
+
+    for(int i=0; i<SLAVE_ROW_NUM; i++){
+        for(int j=0; j<SLAVE_COL_NUM; j++){
+            if(i==row && j==col && is_press){
+                current_key_state_slave[i][j] = LOW;
+            }else{
+                current_key_state_slave[i][j] = HIGH;
+            }
+
+            if(current_key_state_slave[i][j] != before_key_state_slave[i][j]){
+                if(current_key_state_slave[i][j] == LOW){
+                    if(current_keymap[i][MASTER_COL_NUM+j] >= 0xF0){
+                        to_layer = current_keymap[i][MASTER_COL_NUM+j];
+                        keyboard_state->current_layer = to_layer;
+                        change_layer = true;
+                    }else{
+                        Keyboard.press(current_keymap[i][MASTER_COL_NUM+j]);
+                    }
+                }else{
+                    if(current_keymap[i][MASTER_COL_NUM+j] >= 0xF0){
+                    }else{
+                        Keyboard.release(current_keymap[i][MASTER_COL_NUM+j]);
+                    }
+                }
+                before_key_state_slave[i][j] = current_key_state_slave[i][j];
+            }
         }
-    }else{
-        if(current_keymap[row][col] >= 0xF0){
-        }else{
-            Keyboard.release(current_keymap[row][MASTER_COL_NUM+col]);
-        }
+    }
+
+    if(change_layer){
+        changeLayer(to_layer);
+        change_layer = false;
     }
 }

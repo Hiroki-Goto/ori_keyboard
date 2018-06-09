@@ -28,4 +28,5 @@ void setup() {
 void loop() {
     keyMaster.scanMatrix(&keyboard_state_t);
     oled.display(&keyboard_state_t);
+    //delay(10);
 }

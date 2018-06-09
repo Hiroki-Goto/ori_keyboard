@@ -3,12 +3,13 @@
 
 #include "key_slave.h"
 
-void requestEvent();
+
 struct pressKeyState{
     int is_press;
     int row;
     int col;
 }press_key_state;
+
 
 KeySlave::KeySlave(int no_use_num){
     for(int i=0; i<SLAVE_ROW_NUM; i++){
@@ -35,25 +36,22 @@ void KeySlave::scanMatrix(){
             current_key_state[i][j] = digitalRead(slave_col_pin[j]);
             if(current_key_state[i][j] != before_key_state[i][j]){
                 if(current_key_state[i][j] == LOW){
-                    //Keyboard.press(0x61);
                     //sendSerial(PRESS, i, j);
                     press_key_state.is_press = PRESS;
                     press_key_state.row = i;
                     press_key_state.col = j;
                 }else{
-                    //Keyboard.release(0x61);
                     //sendSerial(RELEASE, i, j);
                     press_key_state.is_press = RELEASE;
                     press_key_state.row = i;
                     press_key_state.col = j;
                 }
                 before_key_state[i][j] = current_key_state[i][j];
-                delay(1);
             }
         }
         digitalWrite(slave_row_pin[i],HIGH);
     }
-     Wire.onRequest(requestEvent);
+
 }
 
 void KeySlave::sendSerial(int is_press, int row, int col){

@@ -7,6 +7,8 @@
 #define PRESS 1
 #define RELEASE 0
 
+void requestEvent();
+
 class KeySlave{
 public:
     KeySlave(int no_use_num);

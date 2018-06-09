@@ -8,6 +8,9 @@ public:
     bool current_key_state[MASTER_ROW_NUM][MASTER_COL_NUM];
     bool before_key_state[MASTER_ROW_NUM][MASTER_COL_NUM];
 
+    bool current_key_state_slave[MASTER_ROW_NUM][SLAVE_COL_NUM];
+    bool before_key_state_slave[MASTER_ROW_NUM][SLAVE_COL_NUM];
+
     void scanMatrix(keyboradState *keyboard_state);
 
     void changeLayer(uint8_t layer);
@@ -19,6 +22,7 @@ private:
     uint8_t to_layer;
     uint8_t current_keymap[MASTER_ROW_NUM][MASTER_COL_NUM+SLAVE_COL_NUM];
     bool change_layer;
+    uint8_t before_layer;
 
 };
 
