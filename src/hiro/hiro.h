@@ -13,7 +13,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#pragma once
+//#pragma once
+#ifndef HIRO_H
+#define HIRO_H
 
 #include "quantum.h"
 
@@ -26,10 +28,13 @@
  * represents the switch matrix.
  */
 #define LAYOUT( \
-    k00, k01, k02, \
-      k10,  k11   \
+    k00 \
 ) \
 { \
-    { k00, k01,   k02 }, \
-    { k10, KC_NO, k11 }, \
+    { k00}, \
 }
+
+#define LEFT_IO_ADDR 0b0100000
+#define RIGHT_IO_ADDR 0b0000010
+
+#endif

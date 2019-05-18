@@ -1,4 +1,6 @@
-SRC = matrix.c mcp23017.c
+SRC = twimaster.c \
+	matrix.c \
+ 	mcp23017.c
 
 # MCU name
 #MCU = at90usb1286
@@ -58,7 +60,7 @@ BOOTLOADER = atmel-dfu
 #   Atmel DFU loader    4096
 #   LUFA bootloader     4096
 #   USBaspLoader        2048
-# OPT_DEFS += -DBOOTLOADER_SIZE=4096
+OPT_DEFS += -DBOOTLOADER_SIZE=4096
 
 
 # Build Options
@@ -81,4 +83,4 @@ BLUETOOTH_ENABLE = no       # Enable Bluetooth with the Adafruit EZ-Key HID
 AUDIO_ENABLE = no           # Audio output on port C6
 FAUXCLICKY_ENABLE = no      # Use buzzer to emulate clicky switches
 HD44780_ENABLE = no 		# Enable support for HD44780 based LCDs (+400)
-CUSTOM_MATRIX = yes
+CUSTOM_MATRIX ?= yes

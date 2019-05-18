@@ -24,7 +24,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #include "debounce.h"
 #include "quantum.h"
 
-#include "mcp23017.h"
+#include "./hiro.h"
+#include "i2cmaster.h"
+#include "./mcp23017.h"
 
 #if (MATRIX_COLS <= 8)
 #    define print_matrix_header()  print("\nr/c 01234567\n")
@@ -52,8 +54,8 @@ static pin_t direct_pins[MATRIX_ROWS][MATRIX_COLS] = DIRECT_PINS;
 #elif (DIODE_DIRECTION == ROW2COL) || (DIODE_DIRECTION == COL2ROW)
 static const pin_t row_pins[MATRIX_ROWS] = MATRIX_ROW_PINS;
 static const pin_t col_pins[MATRIX_COLS] = MATRIX_COL_PINS;
-static const bool row_expanded[MATRIX_ROWS] = MATRIX_ROW_EXPANDED;
-static const bool col_expanded[MATRIX_COLS] = MATRIX_COL_EXPANDED;
+static const bool row_expanded[MATRIX_ROWS] = ROW_EXPANDED;
+static const bool col_expanded[MATRIX_COLS] = COL_EXPANDED;
 #endif
 
 /* matrix state(1:on, 0:off) */
@@ -175,13 +177,22 @@ static bool read_cols_on_row(matrix_row_t current_matrix[], uint8_t current_row)
 
 static void select_row(uint8_t row)
 {
-    setPinOutput(row_pins[row]);
-    writePinLow(row_pins[row]);
+	if(row_expanded[row]){
+		mcp23017WritePortB(MCP23017_LEFT_ADDRESS,LEFT_IO_ADDR, (1<<row));
+	}else{
+		setPinOutput(row_pins[row]);
+		writePinLow(row_pins[row]);
+	}
 }
 
 static void unselect_row(uint8_t row)
 {
-    setPinInputHigh(row_pins[row]);
+	if(row_expanded[row]){
+		mcp23017WritePortB(MCP23017_LEFT_ADDRESS,LEFT_IO_ADDR, 0);
+	}else{
+		setPinOutput(row_pins[row]);
+		writePinLow(row_pins[row]);
+	}
 }
 
 static void unselect_rows(void)
@@ -211,6 +222,8 @@ static bool read_cols_on_row(matrix_row_t current_matrix[], uint8_t current_row)
     wait_us(30);
 
     // For each col...
+	current_matrix[current_row] |= (mcp23017ReadPortA(MCP23017_LEFT_ADDRESS, LEFT_IO_ADDR) << 0);
+	/*
     for(uint8_t col_index = 0; col_index < MATRIX_COLS; col_index++) {
 
         // Select the col pin to read (active low)
@@ -219,7 +232,7 @@ static bool read_cols_on_row(matrix_row_t current_matrix[], uint8_t current_row)
         // Populate the matrix row with the state of the col pin
         current_matrix[current_row] |=  pin_state ? 0 : (ROW_SHIFTER << col_index);
     }
-
+	*/
     // Unselect row
     unselect_row(current_row);
 
@@ -230,32 +243,19 @@ static bool read_cols_on_row(matrix_row_t current_matrix[], uint8_t current_row)
 
 static void select_col(uint8_t col)
 {
-	uint8_t pin = col_pins[col];
-	if(col_expanded[col]){
-
-	}else{
-		setPinOutput(col_pins[col]);
-		writePinLow(col_pins[col]);
-	}
+    setPinOutput(col_pins[col]);
+    writePinLow(col_pins[col]);
 }
-int
+
 static void unselect_col(uint8_t col)
 {
-	if(col_expanded[col]){
-
-	}else{
-		setPinInputHigh(col_pins[col]);
-	}
+    setPinInputHigh(col_pins[col]);
 }
 
 static void unselect_cols(void)
 {
     for(uint8_t x = 0; x < MATRIX_COLS; x++) {
-		if(col_expanded[col]){
-
-		}else{
-			setPinInputHigh(col_pins[x]);
-		}
+        setPinInputHigh(col_pins[x]);
     }
 }
 
@@ -309,6 +309,13 @@ static bool read_rows_on_col(matrix_row_t current_matrix[], uint8_t current_col)
 #endif
 
 void matrix_init(void) {
+
+	// initialize mcp23017
+	i2c_init();
+	mcp23017ModePortA(MCP23017_LEFT_ADDRESS, LEFT_IO_ADDR, 0b11111111);//input
+	mcp23017PullupPortA(MCP23017_LEFT_ADDRESS, LEFT_IO_ADDR, 0b00000000);
+	mcp23017ModePortB(MCP23017_LEFT_ADDRESS, LEFT_IO_ADDR, 0b00000000); //output
+
 
     // initialize key pins
     init_pins();
