@@ -31,9 +31,11 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #define DESCRIPTION     A custom keyboard
 
 /* key matrix size */
-#define MATRIX_ROWS 1
-#define MATRIX_COLS 1
-#define MATRIX_COLS_SPLIT 0
+#define MATRIX_ROWS 1	//port B
+#define MATRIX_COLS 2	//port A
+
+/*  col numbers of left I/O expander */
+#define MATRIX_COLS_SPLIT 6
 
 /*
  * Keyboard Matrix Assignments
@@ -47,7 +49,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 #define ROW_EXPANDED {true}
 #define MATRIX_ROW_PINS { }
-#define COL_EXPANDED {true}
+#define COL_EXPANDED {true, true}
 #define MATRIX_COL_PINS { }
 #define UNUSED_PINS
 
