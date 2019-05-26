@@ -54,8 +54,7 @@ static pin_t direct_pins[MATRIX_ROWS][MATRIX_COLS] = DIRECT_PINS;
 #elif (DIODE_DIRECTION == ROW2COL) || (DIODE_DIRECTION == COL2ROW)
 static const pin_t row_pins[MATRIX_ROWS] = MATRIX_ROW_PINS;
 static const pin_t col_pins[MATRIX_COLS] = MATRIX_COL_PINS;
-static const bool row_expanded[MATRIX_ROWS] = ROW_EXPANDED;
-static const bool col_expanded[MATRIX_COLS] = COL_EXPANDED;
+
 #endif
 
 /* matrix state(1:on, 0:off) */
@@ -177,22 +176,19 @@ static bool read_cols_on_row(matrix_row_t current_matrix[], uint8_t current_row)
 
 static void select_row(uint8_t row)
 {
-	if(row_expanded[row]){
-		mcp23017WritePortB(MCP23017_LEFT_ADDRESS,IO_ADDR, (1<<row));
-	}else{
-		setPinOutput(row_pins[row]);
-		writePinLow(row_pins[row]);
-	}
+	// setPinOutput(row_pins[row]);
+	// writePinLow(row_pins[row]);
+	mcp23017WritePortB(MCP23017_LEFT_ADDRESS,IO_ADDR, (1<<row));
+	// mcp23017WritePortB(MCP23017_RIGHT_ADDRESS,IO_ADDR, (1<<row));
 }
 
 static void unselect_row(uint8_t row)
 {
-	if(row_expanded[row]){
-		mcp23017WritePortB(MCP23017_LEFT_ADDRESS,IO_ADDR, 0);
-	}else{
-		setPinOutput(row_pins[row]);
-		writePinLow(row_pins[row]);
-	}
+
+	// setPinOutput(row_pins[row]);
+	// writePinLow(row_pins[row]);
+	mcp23017WritePortB(MCP23017_LEFT_ADDRESS,IO_ADDR, 0);
+	// mcp23017WritePortB(MCP23017_RIGHT_ADDRESS,IO_ADDR, 0);
 }
 
 static void unselect_rows(void)
@@ -222,7 +218,10 @@ static bool read_cols_on_row(matrix_row_t current_matrix[], uint8_t current_row)
     wait_us(30);
 
     // For each col...
-	current_matrix[current_row] |= (mcp23017ReadPortA(MCP23017_LEFT_ADDRESS, IO_ADDR) << 0);
+	//
+	current_matrix[current_row] |= (mcp23017ReadPortA(MCP23017_LEFT_ADDRESS, IO_ADDR));
+	//current_matrix[current_row] |= (mcp23017ReadPortA(MMCP23017_RIGHT_ADDRESS, IO_ADDR) << MATRIX_COLS_SPLIT);
+
 	/*
     for(uint8_t col_index = 0; col_index < MATRIX_COLS; col_index++) {
 
@@ -315,6 +314,11 @@ void matrix_init(void) {
 	mcp23017ModePortA(MCP23017_LEFT_ADDRESS, IO_ADDR, 0b11111111);//input
 	mcp23017PullupPortA(MCP23017_LEFT_ADDRESS, IO_ADDR, 0b00000000);
 	mcp23017ModePortB(MCP23017_LEFT_ADDRESS, IO_ADDR, 0b00000000); //output
+
+
+	// mcp23017ModePortA(MCP23017_RIGHT_ADDRESS, IO_ADDR, 0b11111111);//input
+	// mcp23017PullupPortA(MCP23017_RIGHT_ADDRESS, IO_ADDR, 0b00000000);
+	// mcp23017ModePortB(MCP23017_RIGHT_ADDRESS, IO_ADDR, 0b00000000); //output
 
 
     // initialize key pins
