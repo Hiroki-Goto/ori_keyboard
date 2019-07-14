@@ -20,3 +20,6 @@ There may be others.....
 - [software](https://github.com/Hiroki-Goto/qmk_firmware/tree/hiro_test)  
 
 - [Development record](https://github.com/Hiroki-Goto/ori_keyboard/issues)
+
+# Licence
+BSD 2-Clause "Simplified" License. see [LICENSE](./LICENSE)
