@@ -6,16 +6,17 @@ Software is developed by [qmk firmware](https://github.com/qmk/qmk_firmware).
 
 ## Constitution keyboard
 These module are connected with Pro micro as figure.
-- 2 I/O expanders (scanning key matrix)
+- 2 I/O expanders (scanning key matrix each other)
 - Displaying current layer on OLED module
-- Track ball module (unfinished)
-![Constitution](./photo/constitution.png)
+- Pointing device (uncertain)
+    - Track ball module 
+    - joystick 
 
-### Features.
-- Pro micro can be put favorite place
-- Serial LEDs can be added
+![Constitution](./photo/constitution.jpg)
 
 There may be others.....
 
 ## Development record
-[Development record](https://github.com/Hiroki-Goto/ori_keyboard/issues)
+- [software](https://github.com/Hiroki-Goto/qmk_firmware/tree/hiro_test)  
+
+- [Development record](https://github.com/Hiroki-Goto/ori_keyboard/issues)
