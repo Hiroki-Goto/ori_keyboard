@@ -32,7 +32,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 /* key matrix size */
 #define MATRIX_ROWS 2	//port B
-#define MATRIX_COLS 3	//left port A + rithgt port A
+#define MATRIX_COLS 7	//left port A + rithgt port A
 
 // this is right colnums number
 #define MATRIX_COLS_SPLIT 1

@@ -44,7 +44,8 @@ void expander_scan(uint8_t expander_addr)
   	else {
     	if (expander_status == 1) {
       		dprintf("detached\n");
-      		expander_status = 0;
+			// 例外処理としては必要かもしれないが、途中で追加する場合に邪魔になるため削除
+      		// expander_status = 0;
       		//clear_keyboard();
     	}
   	}
@@ -54,17 +55,18 @@ void expander_scan(uint8_t expander_addr)
 void expander_read_cols(void)
 {
   	expander_read(LEFT_EXPANDER_ADDR, EXPANDER_REG_GPIOA, &left_expander_input);
-	expander_read(RIGHT_EXPANDER_ADDR, EXPANDER_REG_GPIOA, &right_expander_input);
+	// expander_read(RIGHT_EXPANDER_ADDR, EXPANDER_REG_GPIOA, &right_expander_input);
 }
 
 uint8_t expander_get_col(uint8_t col)
 {
-  	if (col > 4) {
+  	if (col > 7) {
     	col++;
   	}
-
-	expander_input = expander_input | (left_expander_input << 1);
-	expander_input = expander_input | (right_expander_input & 0x01);
+	// 左右でIOエクスパンダーを使用する場合、シフトする必要がある
+	// expander_input = expander_input | (left_expander_input << 1);
+	expander_input = expander_input | (left_expander_input);
+	// expander_input = expander_input | (right_expander_input & 0x01);
 	return expander_input & (1<<col) ? 1 : 0;
   	//return left_expander_input & (1<<col) ? 1 : 0;
 }
@@ -91,7 +93,7 @@ void expander_unselect_rows(uint8_t expander_addr)
 
 void expander_select_row(uint8_t expander_addr, uint8_t row)
 {
-  	expander_write(expander_addr, EXPANDER_REG_IODIRB, ~(1<<(row+1)));
+  	expander_write(expander_addr, EXPANDER_REG_IODIRB, ~(1<<(row)));
 }
 
 void expander_config(uint8_t expander_addr)
