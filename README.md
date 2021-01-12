@@ -27,4 +27,3 @@ There may be others.....
 - [Development record](https://github.com/Hiroki-Goto/ori_keyboard/issues)
 
 # Licence
-BSD 2-Clause "Simplified" License. see [LICENSE](./LICENSE)
