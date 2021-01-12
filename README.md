@@ -4,6 +4,11 @@ for me (The name is undecided yet).
 
 Software is developed by [qmk firmware](https://github.com/qmk/qmk_firmware).
 
+## We can't find avr-gcc command
+After qmk setupping, if you use mac OS, avr-gcc may be not found.
+Please refer [this WEB site](https://bytes.usc.edu/ee109/macos-64-bit-toolchain/).
+
+
 ## Constitution keyboard
 These module are connected with Pro micro as figure.
 - 2 I/O expanders (scanning key matrix each other)
